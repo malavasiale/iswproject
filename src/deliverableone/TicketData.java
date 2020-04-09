@@ -55,7 +55,7 @@ public static JSONObject readJsonFromUrl(String url) throws IOException, JSONExc
 public static List<String> retrieveTickID() throws JSONException, IOException {
 	   String projName ="MAHOUT";
 	   Integer j = 0, i = 0, total = 1;
-	   List<String> ids = new ArrayList<String>();
+	   List<String> ids = new ArrayList<>();
     //Get JSON API for closed bugs w/ AV in the project
     do {
        //Only gets a max of 1000 at a time, so must do this multiple times if bugs >1000
@@ -111,11 +111,9 @@ public static void csvWriter() throws IOException, InterruptedException {
 
 public static void main(String[] args) throws IOException, JSONException, InterruptedException {
 	String row,toFind;
-	Integer i,match1,match2,match3,occurrence;
-	List<String> rawData = new ArrayList<String>();
-	List<String> parsedData1 = new ArrayList<String>();
-	List<String> parsedData2 = new ArrayList<String>();
-	
+	Integer i,match1,match2,match3;
+	List<String> rawData = new ArrayList<>();
+	List<String> parsedData1 = new ArrayList<>();
 	FileWriter csvWriter = new FileWriter("finalData.csv");
 	csvWriter.append("Date");
 	csvWriter.append(";");
@@ -179,7 +177,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		toDelete.clear();
 	}
 	
-	List<String> date = new ArrayList<String>();
+	List<String> date = new ArrayList<>();
 
 	int countCommit;
 	for(String s1 : rawData) {
@@ -191,7 +189,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	Collections.sort(date);
 	
 	List<Integer> commitCount = new ArrayList<Integer>();
-	List<String> dateCount = new ArrayList<String>();
+	List<String> dateCount = new ArrayList<>();
 	String[] d = date.get(0).split("-");
 	Integer yearMin = Integer.parseInt(d[0]);
 	Integer monthMin = Integer.parseInt(d[1]);
