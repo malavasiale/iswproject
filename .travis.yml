@@ -1,0 +1,10 @@
+language: java
+jdk:
+    -openjdk8
+addons:
+  sonarcloud:
+    organization: "malavasiale"
+    token:  "b2d7ecf5f605f25122644be2ca42c17ea4b07a5f"
+script:
+- ant build
+- sonar-scanner
