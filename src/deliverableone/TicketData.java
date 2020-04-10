@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +51,9 @@ public static JSONObject readJsonFromUrl(String url) throws IOException, JSONExc
 
 public static List<String> retrieveTickID() throws JSONException, IOException {
 	   String projName ="MAHOUT";
-	   Integer j = 0, i = 0, total = 1;
+	   Integer j = 0; 
+	   Integer i = 0;
+	   Integer total = 1;
 	   List<String> ids = new ArrayList<>();
     //Get JSON API for closed bugs w/ AV in the project
     do {
@@ -74,8 +75,10 @@ public static List<String> retrieveTickID() throws JSONException, IOException {
 }
 
 public static void csvWriter() throws IOException, InterruptedException {
-	Integer i = 1,k;
-	String msg,dt;
+	Integer i = 1;
+	Integer k;
+	String msg;
+	String dt;
 	try(FileWriter csvWriter = new FileWriter("dataCommit.csv");) {
 		csvWriter.append("date");
 		csvWriter.append(",");
@@ -109,8 +112,12 @@ public static void csvWriter() throws IOException, InterruptedException {
 
 
 public static void main(String[] args) throws IOException, JSONException, InterruptedException {
-	String row,toFind;
-	Integer i,match1,match2,match3;
+	String row;
+	String toFind;
+	Integer i;
+	Integer match1;
+	Integer match2;
+	Integer match3;
 	List<String> rawData = new ArrayList<>();
 	List<String> parsedData1 = new ArrayList<>();
 
