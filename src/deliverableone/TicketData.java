@@ -160,7 +160,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	}
 	
 	int count = 0;
-	List<Integer> toDelete = new ArrayList<Integer>();
+	List<Integer> toDelete = new ArrayList<>();
 	for(String elem : parsedData1) {
 		for(int k=0;k<rawData.size();k++) {
 			String id = rawData.get(k).split(":")[0];
@@ -213,7 +213,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		csvWriter.append("Number of commits");
 		csvWriter.append("\n");
 		for(int j = 0;j<dateCount.size();j++) {
-			csvWriter.append(dateCount.get(j).toString());
+			csvWriter.append(dateCount.get(j));
 			csvWriter.append(";");
 			csvWriter.append(commitCount.get(j).toString());
 			csvWriter.append("\n");
