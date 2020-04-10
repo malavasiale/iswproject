@@ -126,21 +126,21 @@ public static List<String> rawDataParser() throws IOException {
 	List<String> ids = retrieveTickID();
 	for(i = 0 ; i < ids.size(); i++) {
 		toFind = ids.get(i);
-		BufferedReader csvReader = new BufferedReader(new FileReader(DATA_COMMIT));
-		while ((row = csvReader.readLine()) != null) {
-		    String[] dataCommit = row.split(",");
-		    if(dataCommit.length >= 2) {
-		    	match1 = StringUtils.countMatches(dataCommit[1],"[" + toFind + "]");
-		    	match2 = StringUtils.countMatches(dataCommit[1],toFind + ":");
-		    	match3 = StringUtils.countMatches(dataCommit[1],toFind + " ");
-		    	if(match1 >= 1 || match2 >= 1 || match3 >=1) {
-		    		String[] date = dataCommit[0].split("T");
-		    		String[] ym = date[0].split("-");
-		    		rawData.add(toFind + ":" + ym[0]+"-"+ym[1]);
-		    	}
-		    }
+		try(BufferedReader csvReader = new BufferedReader(new FileReader(DATA_COMMIT))){
+			while ((row = csvReader.readLine()) != null) {
+			    String[] dataCommit = row.split(",");
+			    if(dataCommit.length >= 2) {
+			    	match1 = StringUtils.countMatches(dataCommit[1],"[" + toFind + "]");
+			    	match2 = StringUtils.countMatches(dataCommit[1],toFind + ":");
+			    	match3 = StringUtils.countMatches(dataCommit[1],toFind + " ");
+			    	if(match1 >= 1 || match2 >= 1 || match3 >=1) {
+			    		String[] date = dataCommit[0].split("T");
+			    		String[] ym = date[0].split("-");
+			    		rawData.add(toFind + ":" + ym[0]+"-"+ym[1]);
+			    	}
+			    }
+			}
 		}
-		csvReader.close();
 	}
 	return rawData;
 }
