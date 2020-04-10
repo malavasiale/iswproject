@@ -100,15 +100,13 @@ public static void csvWriter() throws IOException, InterruptedException {
 	  		return;
 	  	}
 	  	for( k=0 ; k<l ; k++ ) {
-	  		if(l != 0) {
-	  			msg = json.getJSONObject(k).getJSONObject("commit").getString("message");
-	  			dt = json.getJSONObject(k).getJSONObject("commit").getJSONObject("committer").getString("date");
-	  			csvWriter.append(dt);
-	  			csvWriter.append(",");
-	  			csvWriter.append(msg);
-	  			csvWriter.append("\n");
+	  		msg = json.getJSONObject(k).getJSONObject("commit").getString("message");
+	  		dt = json.getJSONObject(k).getJSONObject("commit").getJSONObject("committer").getString("date");
+	  		csvWriter.append(dt);
+	  		csvWriter.append(",");
+	  		csvWriter.append(msg);
+	  		csvWriter.append("\n");
 	  		}
-	  	}
 		}
 		
 	}
@@ -148,8 +146,8 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		    	match3 = StringUtils.countMatches(dataCommit[1],toFind + " ");
 		    	if(match1 >= 1 || match2 >= 1 || match3 >=1) {
 		    		String[] date = dataCommit[0].split("T");
-		    		String[] y_m = date[0].split("-");
-		    		rawData.add(toFind + ":" + y_m[0]+"-"+y_m[1]);
+		    		String[] ym = date[0].split("-");
+		    		rawData.add(toFind + ":" + ym[0]+"-"+ym[1]);
 		    	}
 		    }
 		}
@@ -189,14 +187,12 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	
 	Collections.sort(date);
 	
-	List<Integer> commitCount = new ArrayList<Integer>();
+	List<Integer> commitCount = new ArrayList<>();
 	List<String> dateCount = new ArrayList<>();
 	String[] d = date.get(0).split("-");
 	Integer yearMin = Integer.parseInt(d[0]);
-	Integer monthMin = Integer.parseInt(d[1]);
 	d = date.get(date.size()-1).split("-");
 	Integer yearMax = Integer.parseInt(d[0]);
-	Integer monthMax = Integer.parseInt(d[1]);
 	for(int year = yearMin;year <= yearMax; year++) {
 		for(int month = 1;month <= 12;month++) {
 			if(month < 10) {
