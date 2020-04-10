@@ -79,32 +79,40 @@ public static void csvWriter() throws IOException, InterruptedException {
 	Integer i = 1,k;
 	String msg,dt;
 	FileWriter csvWriter = new FileWriter("dataCommit.csv");
-	csvWriter.append("date");
-	csvWriter.append(",");
-	csvWriter.append("message");
-	csvWriter.append("\n");
-	for(;;i++) {
-		String url = "https://api.github.com/repos/apache/mahout/commits?page="+i.toString()+"&per_page=100";
-		Thread.sleep(1000);
-  	JSONArray json = readJsonArrayFromUrl(url);
-  	Integer l = json.length();
-  	if(l == 0) {
-  		System.out.println(json.length());
-  		csvWriter.flush();
-  		csvWriter.close();
-  		return;
-  	}
-  	for( k=0 ; k<l ; k++ ) {
-  		if(l != 0) {
-  			msg = json.getJSONObject(k).getJSONObject("commit").getString("message");
-  			dt = json.getJSONObject(k).getJSONObject("commit").getJSONObject("committer").getString("date");
-  			csvWriter.append(dt);
-  			csvWriter.append(",");
-  			csvWriter.append(msg);
-  			csvWriter.append("\n");
-  		}
-  	}
+	try {
+		csvWriter.append("date");
+		csvWriter.append(",");
+		csvWriter.append("message");
+		csvWriter.append("\n");
+		for(;;i++) {
+			String url = "https://api.github.com/repos/apache/mahout/commits?page="+i.toString()+"&per_page=100";
+			Thread.sleep(1000);
+	  	JSONArray json = readJsonArrayFromUrl(url);
+	  	Integer l = json.length();
+	  	if(l == 0) {
+	  		System.out.println(json.length());
+	  		csvWriter.flush();
+	  		csvWriter.close();
+	  		return;
+	  	}
+	  	for( k=0 ; k<l ; k++ ) {
+	  		if(l != 0) {
+	  			msg = json.getJSONObject(k).getJSONObject("commit").getString("message");
+	  			dt = json.getJSONObject(k).getJSONObject("commit").getJSONObject("committer").getString("date");
+	  			csvWriter.append(dt);
+	  			csvWriter.append(",");
+	  			csvWriter.append(msg);
+	  			csvWriter.append("\n");
+	  		}
+	  	}
+		}
+		
+	} catch(Exception e) {
+		
+	}finally {
+		csvWriter.close();
 	}
+	
 }
 
 
