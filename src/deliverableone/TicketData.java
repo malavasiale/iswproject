@@ -145,6 +145,30 @@ public static List<String> rawDataParser() throws IOException {
 	return rawData;
 }
 
+public static List<String> deleteDouble(List<String> parsedData1,List<String> rawData){
+	int count = 0;
+	List<Integer> toDelete = new ArrayList<>();
+	
+	
+	for(String elem : parsedData1) {
+		for(int k=0;k<rawData.size();k++) {
+			String id = rawData.get(k).split(":")[0];
+			if(elem.equals(id)) {
+				count++;
+				if(count > 1) {
+					toDelete.add(k);
+				}
+			}
+		}
+		for(int del : toDelete) {
+			rawData.remove(del);
+		}
+		count = 0;
+		toDelete.clear();
+	}
+	return rawData;
+}
+
 
 
 public static void main(String[] args) throws IOException, JSONException, InterruptedException {
@@ -168,24 +192,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		parsedData1.add(s[0]);
 	}
 	
-	int count = 0;
-	List<Integer> toDelete = new ArrayList<>();
-	for(String elem : parsedData1) {
-		for(int k=0;k<rawData.size();k++) {
-			String id = rawData.get(k).split(":")[0];
-			if(elem.equals(id)) {
-				count++;
-				if(count > 1) {
-					toDelete.add(k);
-				}
-			}
-		}
-		for(int del : toDelete) {
-			rawData.remove(del);
-		}
-		count = 0;
-		toDelete.clear();
-	}
+	rawData = deleteDouble(parsedData1,rawData);
 	
 	List<String> date = new ArrayList<>();
 
