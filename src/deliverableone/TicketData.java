@@ -78,8 +78,7 @@ public static List<String> retrieveTickID() throws JSONException, IOException {
 public static void csvWriter() throws IOException, InterruptedException {
 	Integer i = 1,k;
 	String msg,dt;
-	FileWriter csvWriter = new FileWriter("dataCommit.csv");
-	try {
+	try(FileWriter csvWriter = new FileWriter("dataCommit.csv");) {
 		csvWriter.append("date");
 		csvWriter.append(",");
 		csvWriter.append("message");
@@ -91,8 +90,6 @@ public static void csvWriter() throws IOException, InterruptedException {
 	  	Integer l = json.length();
 	  	if(l == 0) {
 	  		System.out.println(json.length());
-	  		csvWriter.flush();
-	  		csvWriter.close();
 	  		return;
 	  	}
 	  	for( k=0 ; k<l ; k++ ) {
@@ -107,10 +104,6 @@ public static void csvWriter() throws IOException, InterruptedException {
 	  	}
 		}
 		
-	} catch(Exception e) {
-		
-	}finally {
-		csvWriter.close();
 	}
 	
 }
@@ -122,7 +115,6 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	Integer i,match1,match2,match3;
 	List<String> rawData = new ArrayList<>();
 	List<String> parsedData1 = new ArrayList<>();
-	FileWriter csvWriter = new FileWriter("finalData.csv");
 
 	
 	File csvFile = new File("dataCommit.csv");
@@ -218,7 +210,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		}
 	}
 
-	try {
+	try(FileWriter csvWriter = new FileWriter("finalData.csv");) {
 		csvWriter.append("Date");
 		csvWriter.append(";");
 		csvWriter.append("Number of commits");
@@ -229,10 +221,6 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 			csvWriter.append(commitCount.get(j).toString());
 			csvWriter.append("\n");
 		}
-	}catch(Exception e) {
-		
-	}finally {
-		csvWriter.close();
 	}
 
 }
