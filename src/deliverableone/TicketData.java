@@ -123,10 +123,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	List<String> rawData = new ArrayList<>();
 	List<String> parsedData1 = new ArrayList<>();
 	FileWriter csvWriter = new FileWriter("finalData.csv");
-	csvWriter.append("Date");
-	csvWriter.append(";");
-	csvWriter.append("Number of commits");
-	csvWriter.append("\n");
+
 	
 	File csvFile = new File("dataCommit.csv");
 	if(!csvFile.isFile()) {
@@ -221,21 +218,23 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		}
 	}
 
-	
-	//System.out.println(dateCount.toString());
-	//System.out.println(commitCount.toString());
-	for(int j = 0;j<dateCount.size();j++) {
-		csvWriter.append(dateCount.get(j).toString());
+	try {
+		csvWriter.append("Date");
 		csvWriter.append(";");
-		csvWriter.append(commitCount.get(j).toString());
+		csvWriter.append("Number of commits");
 		csvWriter.append("\n");
+		for(int j = 0;j<dateCount.size();j++) {
+			csvWriter.append(dateCount.get(j).toString());
+			csvWriter.append(";");
+			csvWriter.append(commitCount.get(j).toString());
+			csvWriter.append("\n");
+		}
+	}catch(Exception e) {
+		
+	}finally {
+		csvWriter.close();
 	}
-	//System.out.println(rawData.toString());
-	//parsedData = rawData.stream().distinct().collect(Collectors.toList());
-	//System.out.println(parsedData.toString());
-	csvWriter.flush();
-	csvWriter.close();
-	return;
+
 }
 
 }
