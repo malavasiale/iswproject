@@ -113,9 +113,7 @@ public static void csvWriter() throws IOException, InterruptedException {
 	
 }
 
-
-
-public static void main(String[] args) throws IOException, JSONException, InterruptedException {
+public static List<String> rawDataParser() throws IOException {
 	String row;
 	String toFind;
 	Integer i;
@@ -123,16 +121,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	Integer match2;
 	Integer match3;
 	List<String> rawData = new ArrayList<>();
-	List<String> parsedData1 = new ArrayList<>();
-	Logger l = Logger.getLogger(TicketData.class.getName());
-
 	
-	File csvFile = new File(DATA_COMMIT);
-	if(!csvFile.isFile()) {
-		l.log(Level.INFO, "Caching file ...");
-		csvWriter();
-	}
-	l.log(Level.INFO, "Starting processing data");
 	
 	List<String> ids = retrieveTickID();
 	for(i = 0 ; i < ids.size(); i++) {
@@ -153,6 +142,26 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		}
 		csvReader.close();
 	}
+	return rawData;
+}
+
+
+
+public static void main(String[] args) throws IOException, JSONException, InterruptedException {
+
+	List<String> rawData = new ArrayList<>();
+	List<String> parsedData1 = new ArrayList<>();
+	Logger l = Logger.getLogger(TicketData.class.getName());
+
+	
+	File csvFile = new File(DATA_COMMIT);
+	if(!csvFile.isFile()) {
+		l.log(Level.INFO, "Caching file ...");
+		csvWriter();
+	}
+	l.log(Level.INFO, "Starting processing data");
+	
+	rawData = rawDataParser();
 	
 	for(String e : rawData) {
 		String[] s = e.split(":");
