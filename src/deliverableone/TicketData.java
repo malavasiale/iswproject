@@ -13,21 +13,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class TicketData {
-	private static String readAll(Reader rd) throws IOException {
+
+	private static final String DATA_COMMIT = "dataCommit.csv";
+	private static final String FINAL_DATA = "finalData.csv";
+	
+private static String readAll(Reader rd) throws IOException {
 	      StringBuilder sb = new StringBuilder();
 	      int cp;
 	      while ((cp = rd.read()) != -1) {
 	         sb.append((char) cp);
 	      }
 	      return sb.toString();
-	   }
+}
 
 public static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
   InputStream is = new URL(url).openStream();
@@ -79,7 +86,7 @@ public static void csvWriter() throws IOException, InterruptedException {
 	Integer k;
 	String msg;
 	String dt;
-	try(FileWriter csvWriter = new FileWriter("dataCommit.csv");) {
+	try(FileWriter csvWriter = new FileWriter(DATA_COMMIT);) {
 		csvWriter.append("date");
 		csvWriter.append(",");
 		csvWriter.append("message");
@@ -90,7 +97,6 @@ public static void csvWriter() throws IOException, InterruptedException {
 	  	JSONArray json = readJsonArrayFromUrl(url);
 	  	Integer l = json.length();
 	  	if(l == 0) {
-	  		System.out.println(json.length());
 	  		return;
 	  	}
 	  	for( k=0 ; k<l ; k++ ) {
@@ -120,28 +126,27 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	Integer match3;
 	List<String> rawData = new ArrayList<>();
 	List<String> parsedData1 = new ArrayList<>();
+	Logger l = Logger.getLogger(TicketData.class.getName());
 
 	
-	File csvFile = new File("dataCommit.csv");
+	File csvFile = new File(DATA_COMMIT);
 	if(!csvFile.isFile()) {
-		System.out.println("caching file...");
+		l.log(Level.INFO, "Caching file ...");
 		csvWriter();
 	}
+	l.log(Level.INFO, "Starting processing data");
 	
 	List<String> ids = retrieveTickID();
 	for(i = 0 ; i < ids.size(); i++) {
 		toFind = ids.get(i);
-		//System.out.println("ID TO FIND : " + toFind );
-		BufferedReader csvReader = new BufferedReader(new FileReader("dataCommit.csv"));
+		BufferedReader csvReader = new BufferedReader(new FileReader(DATA_COMMIT));
 		while ((row = csvReader.readLine()) != null) {
 		    String[] dataCommit = row.split(",");
 		    if(dataCommit.length >= 2) {
 		    	match1 = StringUtils.countMatches(dataCommit[1],"[" + toFind + "]");
 		    	match2 = StringUtils.countMatches(dataCommit[1],toFind + ":");
 		    	match3 = StringUtils.countMatches(dataCommit[1],toFind + " ");
-		    	//System.out.println(dataCommit[0]+","+dataCommit[1]);
 		    	if(match1 >= 1 || match2 >= 1 || match3 >=1) {
-		    		//System.out.println("Match found!");
 		    		String[] date = dataCommit[0].split("T");
 		    		String[] y_m = date[0].split("-");
 		    		rawData.add(toFind + ":" + y_m[0]+"-"+y_m[1]);
@@ -149,7 +154,6 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		    }
 		}
 		csvReader.close();
-		//System.out.println(ids.get(i));
 	}
 	
 	for(String e : rawData) {
@@ -160,7 +164,6 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	int count = 0;
 	List<Integer> toDelete = new ArrayList<Integer>();
 	for(String elem : parsedData1) {
-		//System.out.println("cerco elemento con id "+elem);
 		for(int k=0;k<rawData.size();k++) {
 			String id = rawData.get(k).split(":")[0];
 			if(elem.equals(id)) {
@@ -170,8 +173,6 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 				}
 			}
 		}
-		//System.out.println("Per "+elem+"ho trovato questi doppioni");
-		//System.out.println(toDelete.toString());
 		for(int del : toDelete) {
 			rawData.remove(del);
 		}
@@ -181,9 +182,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	
 	List<String> date = new ArrayList<>();
 
-	int countCommit;
 	for(String s1 : rawData) {
-		countCommit = 0;
 		String[] info = s1.split(":");
 		date.add(info[1]);
 	}
@@ -198,11 +197,8 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	d = date.get(date.size()-1).split("-");
 	Integer yearMax = Integer.parseInt(d[0]);
 	Integer monthMax = Integer.parseInt(d[1]);
-	System.out.println("yearMax : "+yearMax);
 	for(int year = yearMin;year <= yearMax; year++) {
-		System.out.println(year);
 		for(int month = 1;month <= 12;month++) {
-			System.out.println(month);
 			if(month < 10) {
 				dateCount.add(year+"-0"+month);
 				commitCount.add(Collections.frequency(date, year+"-0"+month));
@@ -215,7 +211,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		}
 	}
 
-	try(FileWriter csvWriter = new FileWriter("finalData.csv");) {
+	try(FileWriter csvWriter = new FileWriter(FINAL_DATA);) {
 		csvWriter.append("Date");
 		csvWriter.append(";");
 		csvWriter.append("Number of commits");
@@ -227,6 +223,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 			csvWriter.append("\n");
 		}
 	}
+	l.log(Level.INFO, "Done.See the results in " + FINAL_DATA + "file");
 
 }
 
