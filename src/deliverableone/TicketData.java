@@ -62,9 +62,7 @@ public static List<String> retrieveTickID() throws JSONException, IOException {
 	   Integer i = 0;
 	   Integer total = 1;
 	   List<String> ids = new ArrayList<>();
-    //Get JSON API for closed bugs w/ AV in the project
     do {
-       //Only gets a max of 1000 at a time, so must do this multiple times if bugs >1000
        j = i + 1000;
        String url = "https://issues.apache.org/jira/rest/api/2/search?jql=project=%22"
               + projName + "%22AND%22issueType%22=%22New%20Feature%22AND%22resolution%22=%22fixed%22&fields=key,resolutiondate,versions,created&startAt="
@@ -169,6 +167,35 @@ public static List<String> deleteDouble(List<String> parsedData1,List<String> ra
 	return rawData;
 }
 
+public static List<Double> calculateStatistics(List<Integer> list){
+    double sum = 0.0;
+    double mean = 0.0;
+    double num=0.0;
+    double numi = 0.0;
+    double std = 0.0;
+    double upperLimit = 0.0;
+    double lowerLimit = 0.0;
+    List<Double> statistics = new ArrayList<>();
+
+    for (int i : list) {
+        sum+=i;
+    }
+    mean = sum/list.size();
+
+    for (int i : list) {
+        numi = Math.pow((double) i - mean, 2);
+        num+=numi;
+    }
+    std = Math.sqrt(num/list.size());
+    upperLimit = mean + 3*std;
+    lowerLimit = mean - 3*std;
+    statistics.add(mean);
+    statistics.add(std);
+    statistics.add(upperLimit);
+    statistics.add(lowerLimit);
+    return statistics;
+}
+
 
 
 public static void main(String[] args) throws IOException, JSONException, InterruptedException {
@@ -178,6 +205,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	Logger l = Logger.getLogger(TicketData.class.getName());
 
 	
+	//Retrieve TickID and message from git commits
 	File csvFile = new File(DATA_COMMIT);
 	if(!csvFile.isFile()) {
 		l.log(Level.INFO, "Caching file ...");
@@ -185,6 +213,7 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 	}
 	l.log(Level.INFO, "Starting processing data");
 	
+	//Searching only New Features commits
 	rawData = rawDataParser();
 	
 	for(String e : rawData) {
@@ -192,23 +221,30 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 		parsedData1.add(s[0]);
 	}
 	
+	//Delete eventually doubled tickets
 	rawData = deleteDouble(parsedData1,rawData);
 	
 	List<String> date = new ArrayList<>();
 
+	//Create a list of date of commits and then sort it
 	for(String s1 : rawData) {
 		String[] info = s1.split(":");
 		date.add(info[1]);
 	}
-	
 	Collections.sort(date);
+	
 	
 	List<Integer> commitCount = new ArrayList<>();
 	List<String> dateCount = new ArrayList<>();
+	
+	//Get starting date of the commits
 	String[] d = date.get(0).split("-");
 	Integer yearMin = Integer.parseInt(d[0]);
+	//Getting ending date of the commits
 	d = date.get(date.size()-1).split("-");
 	Integer yearMax = Integer.parseInt(d[0]);
+	
+	//Count number of commits for every month
 	for(int year = yearMin;year <= yearMax; year++) {
 		for(int month = 1;month <= 12;month++) {
 			if(month < 10) {
@@ -222,16 +258,27 @@ public static void main(String[] args) throws IOException, JSONException, Interr
 			
 		}
 	}
-
+	
+	//Reverse cycle to delete overflow
+	while(commitCount.get(commitCount.size()-1) == 0){
+		commitCount.remove(commitCount.size()-1);
+		dateCount.remove(dateCount.size()-1);		
+	}
+	
+	//Calculate statistics
+	List<Double> stat = calculateStatistics(commitCount);
+	
 	try(FileWriter csvWriter = new FileWriter(FINAL_DATA);) {
 		csvWriter.append("Date");
-		csvWriter.append(";");
-		csvWriter.append("Number of commits");
+		csvWriter.append(",");
+		csvWriter.append("Number of commits,");
+		csvWriter.append("Mean,StdDev,Upper limit,Lower limit");
 		csvWriter.append("\n");
 		for(int j = 0;j<dateCount.size();j++) {
 			csvWriter.append(dateCount.get(j));
-			csvWriter.append(";");
-			csvWriter.append(commitCount.get(j).toString());
+			csvWriter.append(",");
+			csvWriter.append(commitCount.get(j).toString()+",");
+			csvWriter.append(stat.get(0).toString() + "," + stat.get(1).toString()+","+stat.get(2).toString() + "," + stat.get(3).toString() );
 			csvWriter.append("\n");
 		}
 	}
