@@ -169,20 +169,20 @@ public static List<String> deleteDouble(List<String> parsedData1,List<String> ra
 
 public static List<Double> calculateStatistics(List<Integer> list){
     double sum = 0.0;
-    double mean = 0.0;
-    double num=0.0;
-    double numi = 0.0;
-    double std = 0.0;
-    double upperLimit = 0.0;
-    double lowerLimit = 0.0;
+    double mean;
+    double num = 0.0;
+    double numi;
+    double std;
+    double upperLimit;
+    double lowerLimit;
     List<Double> statistics = new ArrayList<>();
 
-    for (int i : list) {
+    for (Integer i : list) {
         sum+=i;
     }
     mean = sum/list.size();
 
-    for (int i : list) {
+    for (Integer i : list) {
         numi = Math.pow((double) i - mean, 2);
         num+=numi;
     }
