@@ -28,6 +28,7 @@ public class TicketData {
 
 	private static final String PROJ = "mahout";
 	private static final String OAUTH = "C:\\Users\\"+"malav\\Desktop\\isw2\\oauth.txt";
+	private static final String USERNAME = "malavasiale";
 	private static final String DATA_COMMIT = "dataCommit.csv";
 	private static final String FINAL_DATA = "finalData.csv";
 
@@ -74,7 +75,7 @@ public static InputStreamReader getAuthChannel(String url) throws IOException {
 	URL url1 = new URL(url);
     URLConnection uc = url1.openConnection();
     uc.setRequestProperty("X-Requested-With", "Curl");
-    String username =  "malavasiale";
+    String username =  USERNAME;
     String token =  getOAUTHToken();
     String userpass = username + ":" + token;
     byte[] encodedBytes = Base64.getEncoder().encode(userpass.getBytes());
