@@ -9,8 +9,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,8 +26,11 @@ import org.json.JSONObject;
 
 public class TicketData {
 
+	private static final String PROJ = "mahout";
+	private static final String OAUTH = "C:\\Users\\"+"malav\\Desktop\\isw2\\oauth.txt";
 	private static final String DATA_COMMIT = "dataCommit.csv";
 	private static final String FINAL_DATA = "finalData.csv";
+
 	
 private static String readAll(Reader rd) throws IOException {
 	      StringBuilder sb = new StringBuilder();
@@ -56,8 +61,54 @@ public static JSONObject readJsonFromUrl(String url) throws IOException, JSONExc
    }
 }
 
+public static String getOAUTHToken() throws IOException {
+	String token;
+	try(BufferedReader oauthReader = new BufferedReader(new FileReader(OAUTH));){
+	 	   token = oauthReader.readLine();
+	    }
+	return token;
+}
+
+public static InputStreamReader getAuthChannel(String url) throws IOException {
+	
+	URL url1 = new URL(url);
+    URLConnection uc = url1.openConnection();
+    uc.setRequestProperty("X-Requested-With", "Curl");
+    String username =  "malavasiale";
+    String token =  getOAUTHToken();
+    String userpass = username + ":" + token;
+    byte[] encodedBytes = Base64.getEncoder().encode(userpass.getBytes());
+    String basicAuth = "Basic " + new String(encodedBytes);
+    uc.setRequestProperty("Authorization", basicAuth);
+
+    return new InputStreamReader(uc.getInputStream());
+}
+
+public static JSONArray readJsonArrayAuth(String url) throws IOException, JSONException {
+	
+	//Get a stream reader from a auth channel with github for JSONArray
+    InputStreamReader inputStreamReader = getAuthChannel(url);
+    try(BufferedReader rd = new BufferedReader(inputStreamReader);){
+ 	   return new JSONArray(readAll(rd));
+    } finally {
+       inputStreamReader.close();
+    }
+ }
+
+public static JSONObject readJsonObjectAuth(String url) throws IOException, JSONException {
+	
+	//Get a stream reader from a auth channel with github for JSONObject
+    InputStreamReader inputStreamReader = getAuthChannel(url);
+    try(BufferedReader rd = new BufferedReader(inputStreamReader);){
+ 	   return new JSONObject(readAll(rd));
+    } finally {
+       inputStreamReader.close();
+    }
+ }
+
+
 public static List<String> retrieveTickID() throws JSONException, IOException {
-	   String projName ="MAHOUT";
+	   String projName = PROJ.toUpperCase();
 	   Integer j = 0; 
 	   Integer i = 0;
 	   Integer total = 1;
@@ -90,9 +141,9 @@ public static void csvWriter() throws IOException, InterruptedException {
 		csvWriter.append("message");
 		csvWriter.append("\n");
 		for(;;i++) {
-			String url = "https://api.github.com/repos/apache/mahout/commits?page="+i.toString()+"&per_page=100";
+			String url = "https://api.github.com/repos/apache/"+PROJ+"/commits?page="+i.toString()+"&per_page=100";
 			Thread.sleep(1000);
-	  	JSONArray json = readJsonArrayFromUrl(url);
+	  	JSONArray json = readJsonArrayAuth(url);
 	  	Integer l = json.length();
 	  	if(l == 0) {
 	  		return;
