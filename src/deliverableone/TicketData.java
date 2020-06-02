@@ -118,7 +118,10 @@ public static List<String> rawDataParser() throws IOException {
 	Integer match1;
 	Integer match2;
 	Integer match3;
+	Double numberFound = 0.0;
+	Boolean found = false;
 	List<String> rawData = new ArrayList<>();
+	Logger l = Logger.getLogger(TicketData.class.getName());
 	
 	
 	List<String> ids = retrieveTickID();
@@ -135,11 +138,17 @@ public static List<String> rawDataParser() throws IOException {
 			    		String[] date = dataCommit[0].split("T");
 			    		String[] ym = date[0].split("-");
 			    		rawData.add(toFind + ":" + ym[0]+"-"+ym[1]);
+			    		found = true;
 			    	}
 			    }
 			}
 		}
+		if(Boolean.TRUE.equals(found)) {
+			numberFound++;
+			found = false;
+		}
 	}
+	l.log(Level.INFO,"Data not found : " + (100 - (numberFound/ids.size())*100) + " %");
 	return rawData;
 }
 
