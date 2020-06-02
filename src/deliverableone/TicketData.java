@@ -148,7 +148,8 @@ public static List<String> rawDataParser() throws IOException {
 			found = false;
 		}
 	}
-	l.log(Level.INFO,"Data not found : " + (100 - (numberFound/ids.size())*100) + " %");
+	Double notFoundPerc = 100 - (numberFound/ids.size())*100;
+	l.log(Level.INFO,"Data not found : {0} %",notFoundPerc.toString());
 	return rawData;
 }
 
